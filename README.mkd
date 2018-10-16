@@ -1,0 +1,159 @@
+ISO-TP (ISO 15765-2) Support Library in C
+================================
+
+**This project is inspired by [openxc isotp-c](https://github.com/openxc/isotp-c), but the code is rewrited completely.**
+
+This is a platform agnostic C library that implements the ISO 15765-2 (alsoknown as ISO-TP) protocol, which runs over a CAN bus. Quoting Wikipedia:
+
+>ISO 15765-2, or ISO-TP, is an international standard for sending data packets over a CAN-Bus. The protocol allows for the transport of messages that exceed the eight byte maximum payload of CAN frames. ISO-TP segments longer messages into multiple frames, adding metadata that allows the interpretation of individual frames and reassembly into a complete message packet by the recipient. It can carry up to 4095 bytes of payload per message packet.
+
+This library doesn't assume anything about the source of the ISO-TP messages or the underlying interface to CAN. It uses dependency injection to give you complete control.
+
+**The current version supports ISO-15765-2 single and multiple frame transmition, and work in Full-duplex mode.**
+
+## Usage
+
+First, create some shim functions to let this library use your lower level system:
+
+    /* required, this must send a single CAN message with the given arbitration
+     * ID (i.e. the CAN message ID) and data. The size will never be more than 8
+     * bytes. */
+    int  isotp_user_send_can(const uint32_t arbitration_id,
+                             const uint8_t* data, const uint8_t size) {
+        ...
+    }
+
+    /* required, return system tick, unit is millisecond */
+    uint32_t isotp_user_get_ms(void) {
+        ...
+    }
+    
+    /* optional, provide to receive debugging log messages */
+    void isotp_user_debug(const char* message, ...) {
+        ...
+    }
+
+### API
+
+You can use isotp-c in the fellowing way:
+
+    /* Alloc IsoTpLink statically in RAM */
+    static IsoTpLink g_link;
+
+    int main(void)
+    {
+        /* Initialize CAN and other peripheral */
+        
+        /* Initialize link, 0x7TT is the CAN ID you send */
+        isotp_init_link(&g_link, 0x7TT);
+        
+        while(1){
+        
+            /* If recevie any interested can message, call isotp_on_can_message to handle message */
+            ret = can_receive(&id, &data, &len);
+            
+            /* 0x7RR is CAN ID you want to receive */
+            if (RET_OK == ret && 0x7RR == id){
+                isotp_on_can_message(&g_link, data, len);
+            }
+            
+            /* Poll link to handle multiple frame transmition */
+            isotp_poll(&g_link);
+            
+            /* You can recevie message with isotp_receive.
+               payload is upper layer message buffer, usually UDS;
+               payload_size is payload buffer size;
+               out_size is the actuall read size;
+               */
+            ret = isotp_receive(&g_link, payload, payload_size, &out_size);
+            if (ISOTP_RET_OK == ret){
+                /* Handle received message */
+            }
+            
+            /* And send message with isotp_send */
+            ret = isotp_send(&g_link, payload, payload_size);
+            if (ISOTP_RET_OK == ret){
+                /* Send ok */
+            } else {
+                /* Error occur */
+            }
+            
+            /* In case you want to send function addressing, use isotp_send_with_id */
+            ret = isotp_send(&g_link, 0x7df, payload, payload_size);
+            if (ISOTP_RET_OK == ret){
+                /* Send ok */
+            } else {
+                /* Error occur */
+            }
+        }
+
+        return;
+    }
+    
+You can call isotp_poll as any frequency as you want, as it internally use isotp_user_get_ms to measure timeout.
+If you need handle function addressing, you must use two separate links, one for each.
+
+    /* Alloc IsoTpLink statically in RAM */
+    static IsoTpLink g_phylink;
+    static IsoTpLink g_funclink;
+
+    int main(void)
+    {
+        /* Initialize CAN and other peripheral */
+        
+        /* Initialize link, 0x7TT is the CAN ID you send */
+        isotp_init_link(&g_phylink, 0x7TT);
+        isotp_init_link(&g_funclink, 0x7TT);
+        
+        while(1){
+        
+            /* If recevie any interested can message, call isotp_on_can_message to handle message */
+            ret = can_receive(&id, &data, &len);
+            
+            /* 0x7RR is CAN ID you want to receive */
+            if (RET_OK == ret){
+                if (0x7RR == id){
+                    isotp_on_can_message(&g_phylink, data, len);
+                } else if (0x7df == id) {
+                    isotp_on_can_message(&g_funclink, data, len);
+                }
+            } 
+            
+            /* Poll link to handle multiple frame transmition */
+            isotp_poll(&g_phylink);
+            isotp_poll(&g_funclink);
+            
+            /* You can recevie message with isotp_receive.
+               payload is upper layer message buffer, usually UDS;
+               payload_size is payload buffer size;
+               out_size is the actuall read size;
+               */
+            ret = isotp_receive(&g_phylink, payload, payload_size, &out_size);
+            if (ISOTP_RET_OK == ret){
+                /* Handle physical addressing message */
+            }
+            
+            ret = isotp_receive(&g_funclink, payload, payload_size, &out_size);
+            if (ISOTP_RET_OK == ret){
+                /* Handle functional addressing message */
+            }            
+            
+            /* And send message with isotp_send */
+            ret = isotp_send(&g_link, payload, payload_size);
+            if (ISOTP_RET_OK == ret){
+                /* Send ok */
+            } else {
+                /* Error occur */
+            }
+        }
+
+        return;
+    }
+
+## Authors
+
+* **shen.li lishen5@gmail.com**
+
+## License
+
+Licensed under the MIT license.
