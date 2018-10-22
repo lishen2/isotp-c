@@ -16,12 +16,13 @@ typedef struct {
     /* sender paramters */
     uint32_t                    send_arbitration_id; /* used to reply consecutive frame */
     /* message buffer */
-    uint8_t                     send_buffer[ISO_TP_MAX_MESSAGE_SIZE];
+    uint8_t                     *send_buffer;
+    uint16_t                    send_buf_size;
     uint16_t                    send_size;
     uint16_t                    send_offset;
     /* multi-frame flags */
     uint8_t                     send_sn;
-    uint8_t                     send_bs_remain; /* Remain block size */
+    uint16_t                    send_bs_remain; /* Remain block size */
     uint8_t                     send_st_min;    /* Separation Time between consecutive frames, unit msec */
     uint8_t                     send_wtf_count; /* Maximum number of FC.Wait frame transmissions  */
     uint32_t                    send_timer_st;  /* Last time send consecutive frame */    
@@ -34,7 +35,8 @@ typedef struct {
     /* receiver paramters */
     uint32_t                    receive_arbitration_id;
     /* message buffer */
-    uint8_t                     receive_buffer[ISO_TP_MAX_MESSAGE_SIZE];
+    uint8_t                     *receive_buffer;
+    uint16_t                    recevie_buf_size;
     uint16_t                    receive_size;
     uint16_t                    receive_offset;
     /* multi-frame control */
@@ -48,7 +50,9 @@ typedef struct {
 } IsoTpLink;
 
 /* init isotplink called when startup */
-void isotp_init_link(IsoTpLink *link, uint32_t sendid);
+void isotp_init_link(IsoTpLink *link, uint32_t sendid, 
+                     uint8_t *sendbuf, uint16_t sendbufsize,
+                     uint8_t *recvbuf, uint16_t recvbufsize);
 
 /* called periodicity, send consecutive frame, handle timeout, etc. */
 void isotp_poll(IsoTpLink *link);

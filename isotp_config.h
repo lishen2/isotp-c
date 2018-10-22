@@ -1,10 +1,6 @@
 #ifndef __ISOTP_CONFIG__
 #define __ISOTP_CONFIG__
 
-/* Max payload size this protocol stack can handle
- */
-#define ISO_TP_MAX_MESSAGE_SIZE     512
-
 /* Max number of messages the receiver can receive at one time, this value 
  * is affectied by can driver queue length
  */

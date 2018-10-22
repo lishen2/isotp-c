@@ -26,9 +26,13 @@
 #define ISOTP_RET_WRONG_SN     -4
 #define ISOTP_RET_NO_DATA      -5
 #define ISOTP_RET_TIMEOUT      -6
+#define ISOTP_RET_LENGTH       -7
 
 /* return logic true if 'a' is after 'b' */
 #define IsoTpTimeAfter(a,b) ((int32_t)((int32_t)(b) - (int32_t)(a)) < 0)
+
+/*  invalid bs */
+#define ISOTP_INVALID_BS       0xFFFF
 
 /* ISOTP sender status */
 typedef enum {
@@ -137,7 +141,7 @@ typedef struct {
 } IsoTpConsecutiveFrame;
 
 /* 
-* first frame
+* flow control frame
 * +-------------------------+-----------------------+-----------------------+-----+
 * | byte #0                 | byte #1               | byte #2               | ... |
 * +-------------------------+-----------+-----------+-----------+-----------+-----+
