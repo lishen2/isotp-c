@@ -29,7 +29,7 @@ typedef struct {
     uint32_t                    send_timer_bs;  /* Time until reception of the next FlowControl N_PDU
                                                    start at sending FF, CF, receive FC
                                                    end at receive FC */
-    int                         send_protocol_resault;
+    int                         send_protocol_result;
     uint8_t                     send_status;
 
     /* receiver paramters */
@@ -45,7 +45,7 @@ typedef struct {
     uint32_t                    receive_timer_cr; /* Time until transmission of the next ConsecutiveFrame N_PDU
                                                      start at sending FC, receive CF 
                                                      end at receive FC */
-    int                         receive_protocol_resault;
+    int                         receive_protocol_result;
     uint8_t                     receive_status;                                                     
 } IsoTpLink;
 
