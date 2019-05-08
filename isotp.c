@@ -106,7 +106,7 @@ static int isotp_send_first_frame(IsoTpLink* link, uint32_t id) {
 static int isotp_send_consecutive_frame(IsoTpLink* link) {
     
     IsoTpCanMessage message;
-    uint8_t data_length;
+    uint16_t data_length;
     int ret;
 
     /* multi frame message length must greater than 7  */
