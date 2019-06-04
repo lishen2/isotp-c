@@ -3,7 +3,7 @@ ISO-TP (ISO 15765-2) Support Library in C
 
 **This project is inspired by [openxc isotp-c](https://github.com/openxc/isotp-c), but the code has been completely re-written.**
 
-This is a platform agnostic C library that implements the ISO 15765-2 (alsoknown as ISO-TP) protocol, which runs over a CAN bus. Quoting Wikipedia:
+This is a platform agnostic C library that implements the ISO 15765-2 (also known as ISO-TP) protocol, which runs over a CAN bus. Quoting Wikipedia:
 
 >ISO 15765-2, or ISO-TP, is an international standard for sending data packets over a CAN-Bus.
 >The protocol allows for the transport of messages that exceed the eight byte maximum payload of CAN frames. 
@@ -53,14 +53,14 @@ You can use isotp-c in the following way:
     int main(void) {
         /* Initialize CAN and other peripherals */
         
-        /* Initialize link, 0x7TT is the CAN ID you send */
+        /* Initialize link, 0x7TT is the CAN ID you send with */
         isotp_init_link(&g_link, 0x7TT,
 						g_isotpSendBuf, sizeof(g_isotpSendBuf), 
 						g_isotpRecvBuf, sizeof(g_isotpRecvBuf));
         
         while(1) {
         
-            /* If recevie any interested can message, call isotp_on_can_message to handle message */
+            /* If receive any interested can message, call isotp_on_can_message to handle message */
             ret = can_receive(&id, &data, &len);
             
             /* 0x7RR is CAN ID you want to receive */
@@ -71,7 +71,7 @@ You can use isotp-c in the following way:
             /* Poll link to handle multiple frame transmition */
             isotp_poll(&g_link);
             
-            /* You can recevie message with isotp_receive.
+            /* You can receive message with isotp_receive.
                payload is upper layer message buffer, usually UDS;
                payload_size is payload buffer size;
                out_size is the actuall read size;
@@ -86,10 +86,10 @@ You can use isotp-c in the following way:
             if (ISOTP_RET_OK == ret) {
                 /* Send ok */
             } else {
-                /* Error occur */
+                /* An error occured */
             }
             
-            /* In case you want to send functional addressing, use isotp_send_with_id */
+            /* In case you want to send data w/ functional addressing, use isotp_send_with_id */
             ret = isotp_send_with_id(&g_link, 0x7df, payload, payload_size);
             if (ISOTP_RET_OK == ret) {
                 /* Send ok */
@@ -102,7 +102,7 @@ You can use isotp-c in the following way:
     }
 ```
     
-You can call isotp_poll as frequently as you want, as it internally uses isotp_user_get_ms to measure timeout.
+You can call isotp_poll as frequently as you want, as it internally uses isotp_user_get_ms to measure timeout occurences.
 If you need handle functional addressing, you must use two separate links, one for each.
 
 ```C
@@ -110,17 +110,17 @@ If you need handle functional addressing, you must use two separate links, one f
     static IsoTpLink g_phylink;
     static IsoTpLink g_funclink;
 
-	/* Alloc send and receive buffer statically in RAM */
+	/* Allocate send and receive buffer statically in RAM */
 	static uint8_t g_isotpPhyRecvBuf[512];
 	static uint8_t g_isotpPhySendBuf[512];
-	/* currently functional address is not support multiple frame message */
+	/* currently functional addressing is not supported with multi-frame messages */
 	static uint8_t g_isotpFuncRecvBuf[8];
 	static uint8_t g_isotpFuncSendBuf[8];	
 	
     int main(void) {
-        /* Initialize CAN and other peripheral */
+        /* Initialize CAN and other peripherals */
         
-        /* Initialize link, 0x7TT is the CAN ID you send */
+        /* Initialize link, 0x7TT is the CAN ID you send with */
         isotp_init_link(&g_phylink, 0x7TT,
 						g_isotpPhySendBuf, sizeof(g_isotpPhySendBuf), 
 						g_isotpPhyRecvBuf, sizeof(g_isotpPhyRecvBuf));
@@ -130,7 +130,7 @@ If you need handle functional addressing, you must use two separate links, one f
         
         while(1) {
         
-            /* If recevie any interested can message, call isotp_on_can_message to handle message */
+            /* If any CAN messages are received, which are of interest, call isotp_on_can_message to handle the message */
             ret = can_receive(&id, &data, &len);
             
             /* 0x7RR is CAN ID you want to receive */
@@ -146,7 +146,7 @@ If you need handle functional addressing, you must use two separate links, one f
             isotp_poll(&g_phylink);
             isotp_poll(&g_funclink);
             
-            /* You can recevie message with isotp_receive.
+            /* You can receive message with isotp_receive.
                payload is upper layer message buffer, usually UDS;
                payload_size is payload buffer size;
                out_size is the actuall read size;
@@ -166,7 +166,7 @@ If you need handle functional addressing, you must use two separate links, one f
             if (ISOTP_RET_OK == ret) {
                 /* Send ok */
             } else {
-                /* Error occur */
+                /* An error occured */
             }
         }
 
@@ -177,6 +177,7 @@ If you need handle functional addressing, you must use two separate links, one f
 ## Authors
 
 * **shen.li lishen5@gmail.com** (Original author!)
+* **Simon Cahill** **s.cahill@grimme.de** (or **simon@h3lix.de**)
 
 ## License
 
