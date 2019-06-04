@@ -3,7 +3,7 @@ ISO-TP (ISO 15765-2) Support Library in C
 
 **This project is inspired by [openxc isotp-c](https://github.com/openxc/isotp-c), but the code has been completely re-written.**
 
-This is a platform agnostic C library that implements the ISO 15765-2 (also known as ISO-TP) protocol, which runs over a CAN bus. Quoting Wikipedia:
+This is a platform agnostic C library that implements the [ISO 15765-2](https://en.wikipedia.org/wiki/ISO_15765-2) (also known as ISO-TP) protocol, which runs over a CAN bus. Quoting Wikipedia:
 
 >ISO 15765-2, or ISO-TP, is an international standard for sending data packets over a CAN-Bus.
 >The protocol allows for the transport of messages that exceed the eight byte maximum payload of CAN frames. 
@@ -12,7 +12,7 @@ This is a platform agnostic C library that implements the ISO 15765-2 (also know
 
 This library doesn't assume anything about the source of the ISO-TP messages or the underlying interface to CAN. It uses dependency injection to give you complete control.
 
-**The current version supports ISO-15765-2 single and multiple frame transmition, and works in Full-duplex mode.**
+**The current version supports [ISO-15765-2](https://en.wikipedia.org/wiki/ISO_15765-2) single and multiple frame transmition, and works in Full-duplex mode.**
 
 ## Usage
 
