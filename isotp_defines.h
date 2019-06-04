@@ -179,7 +179,7 @@ typedef struct {
  * protocol specific defines
  *************************************************************/
 
-/* Private: PCI types, for identifying each frame of an ISO-TP message.
+/* Private: Protocol Control Information (PCI) types, for identifying each frame of an ISO-TP message.
  */
 typedef enum {
     ISOTP_PCI_TYPE_SINGLE             = 0x0,
@@ -188,7 +188,7 @@ typedef enum {
     ISOTP_PCI_TYPE_FLOW_CONTROL_FRAME = 0x3
 } IsoTpProtocolControlInformation;
 
-/* Private: PCI flow control identifiers.
+/* Private: Protocol Control Information (PCI) flow control identifiers.
  */
 typedef enum {
     PCI_FLOW_STATUS_CONTINUE = 0x0,
