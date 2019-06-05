@@ -179,7 +179,7 @@ typedef struct {
  * protocol specific defines
  *************************************************************/
 
-/* Private: PCI types, for identifying each frame of an ISO-TP message.
+/* Private: Protocol Control Information (PCI) types, for identifying each frame of an ISO-TP message.
  */
 typedef enum {
     ISOTP_PCI_TYPE_SINGLE             = 0x0,
@@ -188,7 +188,7 @@ typedef enum {
     ISOTP_PCI_TYPE_FLOW_CONTROL_FRAME = 0x3
 } IsoTpProtocolControlInformation;
 
-/* Private: PCI flow control identifiers.
+/* Private: Protocol Control Information (PCI) flow control identifiers.
  */
 typedef enum {
     PCI_FLOW_STATUS_CONTINUE = 0x0,
@@ -198,16 +198,16 @@ typedef enum {
 
 /* Private: network layer resault code.
  */
-#define ISOTP_PROTOCOL_RESAULT_OK            0
-#define ISOTP_PROTOCOL_RESAULT_TIMEOUT_A    -1
-#define ISOTP_PROTOCOL_RESAULT_TIMEOUT_BS   -2
-#define ISOTP_PROTOCOL_RESAULT_TIMEOUT_CR   -3
-#define ISOTP_PROTOCOL_RESAULT_WRONG_SN     -4
-#define ISOTP_PROTOCOL_RESAULT_INVALID_FS   -5
-#define ISOTP_PROTOCOL_RESAULT_UNEXP_PDU    -6
-#define ISOTP_PROTOCOL_RESAULT_WFT_OVRN     -7
-#define ISOTP_PROTOCOL_RESAULT_BUFFER_OVFLW -8
-#define ISOTP_PROTOCOL_RESAULT_ERROR        -9
+#define ISOTP_PROTOCOL_RESULT_OK            0
+#define ISOTP_PROTOCOL_RESULT_TIMEOUT_A    -1
+#define ISOTP_PROTOCOL_RESULT_TIMEOUT_BS   -2
+#define ISOTP_PROTOCOL_RESULT_TIMEOUT_CR   -3
+#define ISOTP_PROTOCOL_RESULT_WRONG_SN     -4
+#define ISOTP_PROTOCOL_RESULT_INVALID_FS   -5
+#define ISOTP_PROTOCOL_RESULT_UNEXP_PDU    -6
+#define ISOTP_PROTOCOL_RESULT_WFT_OVRN     -7
+#define ISOTP_PROTOCOL_RESULT_BUFFER_OVFLW -8
+#define ISOTP_PROTOCOL_RESULT_ERROR        -9
 
 #endif
 
