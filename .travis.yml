@@ -3,4 +3,4 @@ compiler:
     - gcc
     - g++
     - clang
-script: make
+script: make travis
