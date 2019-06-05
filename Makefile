@@ -4,7 +4,7 @@ CFLAGS := -Wall -g -ggdb $(STD)
 LDFLAGS := -shared
 BIN := ./bin
 
-.PHONY: all clean no_opt $(BIN)/$(LIB_NAME) $(BIN)/$(LIB_NAME).$(MAJOR_VER) $(BIN)/$(LIB_NAME).$(MAJOR_VER).$(MINOR_VER).$(REVISION) travis
+.PHONY: all clean fPIC no_opt $(BIN)/$(LIB_NAME) $(BIN)/$(LIB_NAME).$(MAJOR_VER) $(BIN)/$(LIB_NAME).$(MAJOR_VER).$(MINOR_VER).$(REVISION) travis 
 
 ###
 # BEGIN TARGETS
