@@ -3,16 +3,47 @@
 
 #include <stdio.h>
 #include <string.h>
-
-#ifdef __cplusplus
 #include <stdint.h>
 
+#ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "isotp_defines.h"
 #include "isotp_config.h"
-#include "isotp_user.h"
+
+/**
+ * @brief  Callback function to send data to link layer.
+ *
+ * @param  [in] _id   Message id information.
+ * @param  [in] _buf  Send buffer.
+ * @param  [in] _size Send size.
+ * @return Sent size.
+ */
+typedef uint8_t (*send_callback_t)(const uint32_t _id, const uint8_t *const _buf, const uint8_t _size);
+
+/**
+ * @brief  Callback function to receive data from link layer.
+ * @param  [in] _id   Message id information.
+ * @param  [in] _buf  Receive buffer.
+ * @param  [in] _size Receive size.
+ * @return Received size.
+ */
+typedef uint8_t (*receive_callback_t)(uint32_t *const _id, uint8_t *const _buf, const uint8_t _size);
+
+/**
+ * @brief  Callback function to get current system time in milliseconds.
+ *
+ * @return Current time in ms.
+ */
+typedef uint32_t (*sys_time_ms_callback_t)(void);
+
+/**
+ * @brief Callback function for debug.
+ *
+ * @param [in] _message Formated debug message to print.
+ */
+typedef void (*debug_callback_t)(const char* _message, ...);
 
 /**
  * @brief Struct containing the data for linking an application to a CAN instance.
@@ -54,21 +85,47 @@ typedef struct IsoTpLink {
                                                      end at receive FC */
     int                         receive_protocol_result;
     uint8_t                     receive_status;                                                     
+	send_callback_t             send_callback;
+	receive_callback_t          receive_callback;
+	void (*indication_callback) (struct IsoTpLink *const _link, const uint32_t _id, const uint8_t *const _buf, const uint16_t _size);
+	sys_time_ms_callback_t      sys_time_ms_callback;
+	debug_callback_t            debug_callback;
 } IsoTpLink;
+
+/**
+ * @brief Callback function to indicate data of network layer ready.
+ *
+ * @param [in] _link ISOTP link.
+ * @param [in] _id   Message id information.
+ * @param [in] _buf  Indication buffer.
+ * @param [in] _size Indication size.
+ */
+typedef void (*indication_callback_t)(IsoTpLink *const _link, const uint32_t _id, const uint8_t *const _buf, const uint16_t _size);
 
 /**
  * @brief Initialises the ISO-TP library.
  *
  * @param link The @code IsoTpLink @endcode instance used for transceiving data.
  * @param sendid The ID used to send data to other CAN nodes.
+ * @param recvid The ID used to receive data from other CAN nodes.
  * @param sendbuf A pointer to an area in memory which can be used as a buffer for data to be sent.
  * @param sendbufsize The size of the buffer area.
  * @param recvbuf A pointer to an area in memory which can be used as a buffer for data to be received.
  * @param recvbufsize The size of the buffer area.
+ * @param send_callback Called to send data to CAN.
+ * @param receive_callback Called when need receive data from CAN.
+ * @param indication_callback Called to indicate application layer after receiving full data.
+ * @param sys_time_ms_callback Get system time in milliseconds.
+ * @param debug_callback Print debug info.
  */
-void isotp_init_link(IsoTpLink *link, uint32_t sendid, 
+void isotp_init_link(IsoTpLink *link, uint32_t sendid, uint32_t recvid,
                      uint8_t *sendbuf, uint16_t sendbufsize,
-                     uint8_t *recvbuf, uint16_t recvbufsize);
+                     uint8_t *recvbuf, uint16_t recvbufsize,	
+	                 send_callback_t send_callback,
+				     receive_callback_t receive_callback,
+				     indication_callback_t indication_callback,
+				     sys_time_ms_callback_t sys_time_ms_callback,
+					 debug_callback_t debug_callback);
 
 /**
  * @brief Polling function; call this function periodically to handle timeouts, send consecutive frames, etc.
@@ -82,10 +139,20 @@ void isotp_poll(IsoTpLink *link);
  * Determines whether an incoming message is a valid ISO-TP frame or not and handles it accordingly.
  *
  * @param link The @code IsoTpLink @endcode instance used for transceiving data.
+ * @param _id  Message id.
  * @param data The data received via CAN.
  * @param len The length of the data received.
  */
-void isotp_on_can_message(IsoTpLink *link, uint8_t *data, uint8_t len);
+void isotp_indication(IsoTpLink *link, const uint32_t _id, const uint8_t *const data, const uint8_t len);
+
+/**
+ * @brief Send network layer message.
+ *
+ * @param [in] _link ISOTP link.
+ * @param [in] _buf  Send buffer.
+ * @param [in] _size Send size.
+ */
+int isotp_send_poll(IsoTpLink *const _link, const uint8_t *const _buf, const uint16_t _size);
 
 /**
  * @brief Sends ISO-TP frames via CAN, using the ID set in the initialising function.
@@ -104,11 +171,6 @@ void isotp_on_can_message(IsoTpLink *link, uint8_t *data, uint8_t len);
  *  - The return value of the user shim function isotp_user_send_can().
  */
 int isotp_send(IsoTpLink *link, const uint8_t payload[], uint16_t size);
-
-/**
- * @brief See @link isotp_send @endlink, with the exception that this function is used only for functional addressing.
- */
-int isotp_send_with_id(IsoTpLink *link, uint32_t id, const uint8_t payload[], uint16_t size);
 
 /**
  * @brief Receives and parses the received data and copies the parsed data in to the internal buffer.

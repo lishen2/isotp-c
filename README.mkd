@@ -19,11 +19,39 @@ This library doesn't assume anything about the source of the ISO-TP messages or 
 First, create some [shim](https://en.wikipedia.org/wiki/Shim_(computing)) functions to let this library use your lower level system:
 
 ```C
-    /* required, this must send a single CAN message with the given arbitration
-     * ID (i.e. the CAN message ID) and data. The size will never be more than 8
-     * bytes. */
-    int  isotp_user_send_can(const uint32_t arbitration_id,
-                             const uint8_t* data, const uint8_t size) {
+    /**
+     * @brief  Send CAN message.
+     *
+     * @param  [in] _id    CAN ID.
+     * @param  [in] _buf   Send buffer.
+     * @param  [in] _size  Send size.
+     * @return Sent size.
+     */
+    uint8_t  isotp_user_send_can(const uint32_t _id, const uint8_t *const _buf, const uint8_t _size) {
+        // ...
+    }
+
+    /**
+     * @brief  Receive CAN message.
+     *
+     * @param  [in] _id    CAN ID.
+     * @param  [in] _buf   Receive buffer.
+     * @param  [in] _size  Receive size.
+     * @return Received size.
+     */
+    uint8_t isotp_user_receive_can(uint32_t *const _id, uint8_t *const _buf, uint8_t _size) {
+        // ...
+    }
+
+    /**
+     * @brief Called when receiving integrity data from network layer.
+     *
+     * @param [in] _link  ISOTP link.
+     * @param [in] _id    Message id.
+     * @param [in] _buf   Indication buffer.
+     * @param [in] _size  Indication size.
+     */
+    void indication_to_upperlayer(IsoTpLink *const _link, const uint32_t _id, const uint8_t *const _buf, const uint16_t _size) {
         // ...
     }
 
@@ -53,19 +81,18 @@ You can use isotp-c in the following way:
     int main(void) {
         /* Initialize CAN and other peripherals */
         
-        /* Initialize link, 0x7TT is the CAN ID you send with */
-        isotp_init_link(&g_link, 0x7TT,
-						g_isotpSendBuf, sizeof(g_isotpSendBuf), 
-						g_isotpRecvBuf, sizeof(g_isotpRecvBuf));
+        /* Initialize link, 0x7TT is the CAN ID you send with and 7RR is the CAN ID you wanted receive */
+         isotp_init_link(_link, 0x7TT, 0x7RR, g_isotpSendBuf, sizeof(g_isotpSendBuf), g_isotpRecvBuf, sizeof(g_isotpRecvBuf),
+			        isotp_user_send_can, isotp_user_receive_can, indication_to_upperlayer, isotp_user_get_ms, isotp_user_debug);
         
         while(1) {
         
-            /* If receive any interested can message, call isotp_on_can_message to handle message */
+            /* If receive any interested can message, call isotp_indication to handle message */
             ret = can_receive(&id, &data, &len);
             
-            /* 0x7RR is CAN ID you want to receive */
-            if (RET_OK == ret && 0x7RR == id) {
-                isotp_on_can_message(&g_link, data, len);
+            /* Indicate ISO-TP  CAN message received */
+            if (RET_OK == ret) {
+                isotp_indication(&g_link, id, data, len);
             }
             
             /* Poll link to handle multiple frame transmition */
@@ -87,14 +114,6 @@ You can use isotp-c in the following way:
                 /* Send ok */
             } else {
                 /* An error occured */
-            }
-            
-            /* In case you want to send data w/ functional addressing, use isotp_send_with_id */
-            ret = isotp_send_with_id(&g_link, 0x7df, payload, payload_size);
-            if (ISOTP_RET_OK == ret) {
-                /* Send ok */
-            } else {
-                /* Error occur */
             }
         }
 
@@ -120,26 +139,24 @@ If you need handle functional addressing, you must use two separate links, one f
     int main(void) {
         /* Initialize CAN and other peripherals */
         
-        /* Initialize link, 0x7TT is the CAN ID you send with */
-        isotp_init_link(&g_phylink, 0x7TT,
+        /* Initialize link, 0x7TT is the CAN ID you send with and 7RR is the CAN ID you want receive */
+        isotp_init_link(&g_phylink, 0x7TT, 0x7RR,
 						g_isotpPhySendBuf, sizeof(g_isotpPhySendBuf), 
-						g_isotpPhyRecvBuf, sizeof(g_isotpPhyRecvBuf));
-        isotp_init_link(&g_funclink, 0x7TT,
+						g_isotpPhyRecvBuf, sizeof(g_isotpPhyRecvBuf),
+                        isotp_user_send_can, isotp_user_receive_can, indication_to_upperlayer, isotp_user_get_ms, isotp_user_debug);
+        isotp_init_link(&g_funclink, 0x7TT, 0x7RR,
 						g_isotpFuncSendBuf, sizeof(g_isotpFuncSendBuf), 
-						g_isotpFuncRecvBuf, sizeof(g_isotpFuncRecvBuf));
+						g_isotpFuncRecvBuf, sizeof(g_isotpFuncRecvBuf),
+                        isotp_user_send_can, isotp_user_receive_can, indication_to_upperlayer, isotp_user_get_ms, isotp_user_debug);
         
         while(1) {
         
-            /* If any CAN messages are received, which are of interest, call isotp_on_can_message to handle the message */
+            /* If any CAN messages are received, which are of interest, call isotp_indication to handle the message */
             ret = can_receive(&id, &data, &len);
             
-            /* 0x7RR is CAN ID you want to receive */
+            /* Indicate ISO-TP  CAN message received */
             if (RET_OK == ret) {
-                if (0x7RR == id) {
-                    isotp_on_can_message(&g_phylink, data, len);
-                } else if (0x7df == id) {
-                    isotp_on_can_message(&g_funclink, data, len);
-                }
+                isotp_indication(&g_funclink, id, data, len);
             } 
             
             /* Poll link to handle multiple frame transmition */

@@ -4,16 +4,19 @@
 /**************************************************************
  * OS specific defines
  *************************************************************/
-#ifdef _WIN32
+#if defined(_WIN32)
 #define snprintf _snprintf
-#endif
-
-#ifdef _WIN32
-#define LITTLE_ENDIAN
+#define _LITTLE_ENDIAN
 #define __builtin_bswap8  _byteswap_uint8
 #define __builtin_bswap16 _byteswap_uint16
 #define __builtin_bswap32 _byteswap_uint32
 #define __builtin_bswap64 _byteswap_uint64
+#elif defined(__GNUC__) || defined(__CC_ARM)
+#if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#define _LITTLE_ENDIAN
+#else
+#endif
+#else
 #endif
 
 /**************************************************************
@@ -49,7 +52,7 @@ typedef enum {
 } IsoTpReceiveStatusTypes;
 
 /* can fram defination */
-#if defined(LITTLE_ENDIAN)
+#if defined(_LITTLE_ENDIAN)
 typedef struct {
     uint8_t reserve_1:4;
     uint8_t type:4;
