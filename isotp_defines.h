@@ -2,6 +2,18 @@
 #define __ISOTP_TYPES__
 
 /**************************************************************
+ * compiler specific defines
+ *************************************************************/
+#ifdef __GNUC__
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define ISOTP_BYTE_ORDER_LITTLE_ENDIAN
+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#else
+#error "unsupported byte ordering"
+#endif
+#endif
+
+/**************************************************************
  * OS specific defines
  *************************************************************/
 #ifdef _WIN32
@@ -9,7 +21,7 @@
 #endif
 
 #ifdef _WIN32
-#define LITTLE_ENDIAN
+#define ISOTP_BYTE_ORDER_LITTLE_ENDIAN
 #define __builtin_bswap8  _byteswap_uint8
 #define __builtin_bswap16 _byteswap_uint16
 #define __builtin_bswap32 _byteswap_uint32
@@ -49,34 +61,34 @@ typedef enum {
 } IsoTpReceiveStatusTypes;
 
 /* can fram defination */
-#if defined(LITTLE_ENDIAN)
+#if defined(ISOTP_BYTE_ORDER_LITTLE_ENDIAN)
 typedef struct {
     uint8_t reserve_1:4;
     uint8_t type:4;
     uint8_t reserve_2[7];
 } IsoTpPciType;
 
-typedef struct {    
+typedef struct {
     uint8_t SF_DL:4;
     uint8_t type:4;
     uint8_t data[7];
 } IsoTpSingleFrame;
 
 typedef struct {
-    uint8_t FF_DL_high:4;    
+    uint8_t FF_DL_high:4;
     uint8_t type:4;
     uint8_t FF_DL_low;
     uint8_t data[6];
 } IsoTpFirstFrame;
 
 typedef struct {
-    uint8_t SN:4;    
+    uint8_t SN:4;
     uint8_t type:4;
     uint8_t data[7];
 } IsoTpConsecutiveFrame;
 
 typedef struct {
-    uint8_t FS:4;    
+    uint8_t FS:4;
     uint8_t type:4;
     uint8_t BS;
     uint8_t STmin;
@@ -91,7 +103,7 @@ typedef struct {
     uint8_t reserve_2[7];
 } IsoTpPciType;
 
-/* 
+/*
 * single frame
 * +-------------------------+-----+
 * | byte #0                 | ... |
@@ -107,7 +119,7 @@ typedef struct {
     uint8_t data[7];
 } IsoTpSingleFrame;
 
-/* 
+/*
 * first frame
 * +-------------------------+-----------------------+-----+
 * | byte #0                 | byte #1               | ... |
@@ -124,7 +136,7 @@ typedef struct {
     uint8_t data[6];
 } IsoTpFirstFrame;
 
-/* 
+/*
 * consecutive frame
 * +-------------------------+-----+
 * | byte #0                 | ... |
@@ -140,7 +152,7 @@ typedef struct {
     uint8_t data[7];
 } IsoTpConsecutiveFrame;
 
-/* 
+/*
 * flow control frame
 * +-------------------------+-----------------------+-----------------------+-----+
 * | byte #0                 | byte #1               | byte #2               | ... |
