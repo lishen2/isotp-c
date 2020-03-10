@@ -240,6 +240,11 @@ int isotp_send(IsoTpLink *link, const uint8_t payload[], uint16_t size) {
 int isotp_send_with_id(IsoTpLink *link, uint32_t id, const uint8_t payload[], uint16_t size) {
     int ret;
 
+    if (link == 0x0) {
+        isotp_user_debug("Link is null!");
+        return ISOTP_RET_ERROR;
+    }
+
     if (size > link->send_buf_size) {
         isotp_user_debug("Message size too large. Increase ISO_TP_MAX_MESSAGE_SIZE to set a larger buffer\n");
         char message[128];

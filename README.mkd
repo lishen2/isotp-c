@@ -14,6 +14,11 @@ This library doesn't assume anything about the source of the ISO-TP messages or 
 
 **The current version supports [ISO-15765-2](https://en.wikipedia.org/wiki/ISO_15765-2) single and multiple frame transmition, and works in Full-duplex mode.**
 
+## Builds
+
+### Master Build
+[![Build Status](https://api.travis-ci.com/Beatsleigher/isotp-c.svg?branch=master)](https://travis-ci.com/Beatsleigher/isotp-c)
+
 ## Usage
 
 First, create some [shim](https://en.wikipedia.org/wiki/Shim_(computing)) functions to let this library use your lower level system:
