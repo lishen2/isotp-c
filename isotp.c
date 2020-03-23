@@ -117,7 +117,7 @@ static int isotp_send_consecutive_frame(IsoTpLink* link) {
     assert(link->send_size > 7);
 
     /* setup message  */
-    message.as.consecutive_frame.type = TSOTP_PCI_TYPE_CONSECUTIVE_FRAME;
+    message.as.consecutive_frame.type = ISOTP_PCI_TYPE_CONSECUTIVE_FRAME;
     message.as.consecutive_frame.SN = link->send_sn;
     data_length = link->send_size - link->send_offset;
     if (data_length > sizeof(message.as.consecutive_frame.data)) {
@@ -348,7 +348,7 @@ void isotp_on_can_message(IsoTpLink *link, uint8_t *data, uint8_t len) {
             
             break;
         }
-        case TSOTP_PCI_TYPE_CONSECUTIVE_FRAME: {
+        case ISOTP_PCI_TYPE_CONSECUTIVE_FRAME: {
             /* check if in receiving status */
             if (ISOTP_RECEIVE_STATUS_INPROGRESS != link->receive_status) {
                 link->receive_protocol_result = ISOTP_PROTOCOL_RESULT_UNEXP_PDU;
