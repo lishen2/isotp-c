@@ -6,7 +6,7 @@
 ///                 STATIC FUNCTIONS                ///
 ///////////////////////////////////////////////////////
 
-/* st_min to microsecond */
+/* microsecond to st_min  */
 static uint8_t isotp_ms_to_st_min(uint8_t ms) {
     uint8_t st_min;
 
