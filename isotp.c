@@ -62,7 +62,7 @@ static int isotp_send_single_frame(IsoTpLink* link, uint32_t id) {
     IsoTpCanMessage message;
     int ret;
 
-    /* multi frame message length must greater than 7  */
+    /* single frame message length must less than or equal to 7  */
     assert(link->send_size <= 7);
 
     /* setup message  */
