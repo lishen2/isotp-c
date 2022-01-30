@@ -4,7 +4,8 @@
 /* user implemented, print debug message */
 void isotp_user_debug(const char* message, ...);
 
-/* user implemented, send can message */
+/* user implemented, send can message. should return ISOTP_RET_OK when success.
+*/
 int  isotp_user_send_can(const uint32_t arbitration_id,
                          const uint8_t* data, const uint8_t size);
 
