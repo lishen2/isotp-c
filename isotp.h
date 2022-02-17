@@ -12,7 +12,6 @@ extern "C" {
 
 #include "isotp_defines.h"
 #include "isotp_config.h"
-#include "isotp_user.h"
 
 /**
  * @brief Struct containing the data for linking an application to a CAN instance.
@@ -54,6 +53,12 @@ typedef struct IsoTpLink {
                                                      end at receive FC */
     int                         receive_protocol_result;
     uint8_t                     receive_status;                                                     
+
+    /* user implemented callback functions */
+    uint32_t                    (*isotp_user_get_ms)(void); /* get millisecond */
+    int                         (*isotp_user_send_can)(const uint32_t arbitration_id,
+                            const uint8_t* data, const uint8_t size); /* send can message. should return ISOTP_RET_OK when success.  */
+    void                        (*isotp_user_debug)(const char* message, ...); /* print debug message */
 } IsoTpLink;
 
 /**
@@ -65,10 +70,22 @@ typedef struct IsoTpLink {
  * @param sendbufsize The size of the buffer area.
  * @param recvbuf A pointer to an area in memory which can be used as a buffer for data to be received.
  * @param recvbufsize The size of the buffer area.
+ * @param isotp_user_get_ms A pointer to a function which returns the current time as milliseconds.
+ * @param isotp_user_send_can A pointer to a function which sends a can message. should return ISOTP_RET_OK when success.
+ * @param isotp_user_debug A pointer to a function which prints a debug message.
  */
-void isotp_init_link(IsoTpLink *link, uint32_t sendid, 
-                     uint8_t *sendbuf, uint16_t sendbufsize,
-                     uint8_t *recvbuf, uint16_t recvbufsize);
+void isotp_init_link(
+    IsoTpLink *link,
+    uint32_t sendid, 
+    uint8_t *sendbuf, 
+    uint16_t sendbufsize,
+    uint8_t *recvbuf,
+    uint16_t recvbufsize,
+    uint32_t                    (*isotp_user_get_ms)(void),
+    int                         (*isotp_user_send_can)(const uint32_t arbitration_id,
+                            const uint8_t* data, const uint8_t size),
+    void                        (*isotp_user_debug)(const char* message, ...)
+ );
 
 /**
  * @brief Polling function; call this function periodically to handle timeouts, send consecutive frames, etc.
