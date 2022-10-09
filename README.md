@@ -182,7 +182,7 @@ If you need handle functional addressing, you must use two separate links, one f
 ## Authors
 
 * **shen.li lishen5@gmail.com** (Original author!)
-* **Simon Cahill** **s.cahill@grimme.de** (or **simonc@online.de**)
+* **Simon Cahill** **s.cahill@grimme.de** (or **contact@simonc.eu**)
 
 ## License
 
