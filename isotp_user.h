@@ -15,8 +15,8 @@ void isotp_user_debug(const char* message, ...);
 int  isotp_user_send_can(const uint32_t arbitration_id,
                          const uint8_t* data, const uint8_t size);
 
-/* user implemented, get millisecond */
-uint32_t isotp_user_get_ms(void);
+/* user implemented, get microsecond */
+uint32_t isotp_user_get_us(void);
 
 #ifdef __cplusplus
 }
