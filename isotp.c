@@ -414,7 +414,8 @@ void isotp_on_can_message(IsoTpLink *link, uint8_t *data, uint8_t len) {
                     } else {
                         link->send_bs_remain = message.as.flow_control.BS;
                     }
-                    link->send_st_min_us = isotp_st_min_to_us(message.as.flow_control.STmin); // TODO: override?
+                    uint32_t message_st_min_us = isotp_st_min_to_us(message.as.flow_control.STmin);
+                    link->send_st_min_us = message_st_min_us > ISO_TP_DEFAULT_ST_MIN_US ? message_st_min_us : ISO_TP_DEFAULT_ST_MIN_US; // prefer as much st_min as possible for stability?
                     link->send_wtf_count = 0;
                 }
             }
