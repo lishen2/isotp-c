@@ -9,21 +9,21 @@
 /* st_min to microsecond */
 static uint8_t isotp_us_to_st_min(uint32_t us) {
     if (us <= 127000) {
-    return us / 1000;
-  } else if (us >= 100 && us <= 900) {
-    return 0xF0 + (us / 100);
-  }
+        return us / 1000;
+    } else if (us >= 100 && us <= 900) {
+        return 0xF0 + (us / 100);
+    }
     return 0;
 }
 
 /* st_min to usec  */
 static uint32_t isotp_st_min_to_us(uint8_t st_min) {
     if (st_min <= 0x7F) {
-    return st_min * 1000;
-  } else if (st_min >= 0xF1 && st_min <= 0xF9) {
-    return (st_min - 0xF0) * 100;
-  }
-  return 0;
+        return st_min * 1000;
+    } else if (st_min >= 0xF1 && st_min <= 0xF9) {
+        return (st_min - 0xF0) * 100;
+    }
+    return 0;
 }
 
 static int isotp_send_flow_control(IsoTpLink* link, uint8_t flow_status, uint8_t block_size, uint32_t st_min_us) {
