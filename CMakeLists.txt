@@ -1,19 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 
-###
 # Project definition
-###
 project(isotp LANGUAGES C)
 
-###
 # Get all include directories
-###
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/
-)
-
-###
+include_directories(src)
 # Compile isotp as Shared Lib
-###
-add_library(isotp SHARED
-            isotp.c)
+add_library(isotp SHARED isotp.c)
+
+target_compile_options(isotp PUBLIC -fPIC)
+target_include_directories(isotp PUBLIC src)
