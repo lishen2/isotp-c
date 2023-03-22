@@ -1,5 +1,7 @@
-#ifndef __ISOTP_TYPES__
-#define __ISOTP_TYPES__
+#ifndef __ISOTP_DEFINES_H__
+#define __ISOTP_DEFINES_H__
+
+#include <stdint.h>
 
 /**************************************************************
  * compiler specific defines
@@ -21,6 +23,7 @@
 #endif
 
 #ifdef _WIN32
+#include <windows.h>
 #define ISOTP_BYTE_ORDER_LITTLE_ENDIAN
 #define __builtin_bswap8  _byteswap_uint8
 #define __builtin_bswap16 _byteswap_uint16
