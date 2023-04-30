@@ -17,7 +17,7 @@ This library doesn't assume anything about the source of the ISO-TP messages or 
 ## Builds
 
 ### Master Build
-[![Build Status](https://api.travis-ci.com/Beatsleigher/isotp-c.svg?branch=master)](https://travis-ci.com/Beatsleigher/isotp-c)
+[![CMake](https://github.com/SimonCahill/isotp-c/actions/workflows/cmake.yml/badge.svg)](https://github.com/SimonCahill/isotp-c/actions/workflows/cmake.yml)
 
 ## Usage
 
