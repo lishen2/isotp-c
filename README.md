@@ -32,8 +32,8 @@ First, create some [shim](https://en.wikipedia.org/wiki/Shim_(computing)) functi
         // ...
     }
 
-    /* required, return system tick, unit is millisecond */
-    uint32_t isotp_user_get_ms(void) {
+    /* required, return system tick, unit is micro-second */
+    uint32_t isotp_user_get_us(void) {
         // ...
     }
     
