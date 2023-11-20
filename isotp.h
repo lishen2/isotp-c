@@ -57,8 +57,9 @@ typedef struct IsoTpLink {
     /* user implemented callback functions */
     uint32_t                    (*isotp_user_get_ms)(void); /* get millisecond */
     int                         (*isotp_user_send_can)(const uint32_t arbitration_id,
-                            const uint8_t* data, const uint8_t size); /* send can message. should return ISOTP_RET_OK when success.  */
+                            const uint8_t* data, const uint8_t size, void *user_data); /* send can message. should return ISOTP_RET_OK when success.  */
     void                        (*isotp_user_debug)(const char* message, ...); /* print debug message */
+    void*                       user_data; /* user data */
 } IsoTpLink;
 
 /**
@@ -73,6 +74,7 @@ typedef struct IsoTpLink {
  * @param isotp_user_get_ms A pointer to a function which returns the current time as milliseconds.
  * @param isotp_user_send_can A pointer to a function which sends a can message. should return ISOTP_RET_OK when success.
  * @param isotp_user_debug A pointer to a function which prints a debug message.
+ * @param isotp_user_debug A pointer to user data passed to the user implemented callback functions.
  */
 void isotp_init_link(
     IsoTpLink *link,
@@ -81,10 +83,10 @@ void isotp_init_link(
     uint16_t sendbufsize,
     uint8_t *recvbuf,
     uint16_t recvbufsize,
-    uint32_t                    (*isotp_user_get_ms)(void),
-    int                         (*isotp_user_send_can)(const uint32_t arbitration_id,
-                            const uint8_t* data, const uint8_t size),
-    void                        (*isotp_user_debug)(const char* message, ...)
+    uint32_t (*isotp_user_get_ms)(void),
+    int (*isotp_user_send_can)(const uint32_t arbitration_id, const uint8_t* data, const uint8_t size, void *user_data),
+    void (*isotp_user_debug)(const char* message, ...),
+    void *user_data
  );
 
 /**

@@ -47,7 +47,7 @@ static int isotp_send_flow_control(IsoTpLink* link, uint8_t flow_status, uint8_t
     /* send message */
 #ifdef ISO_TP_FRAME_PADDING
     (void) memset(message.as.flow_control.reserve, 0, sizeof(message.as.flow_control.reserve));
-    ret = link->isotp_user_send_can(link->send_arbitration_id, message.as.data_array.ptr, sizeof(message));
+    ret = link->isotp_user_send_can(link->send_arbitration_id, message.as.data_array.ptr, sizeof(message), link->user_data);
 #else    
     ret = link->isotp_user_send_can(link->send_arbitration_id,
             message.as.data_array.ptr,
@@ -73,7 +73,7 @@ static int isotp_send_single_frame(IsoTpLink* link, uint32_t id) {
     /* send message */
 #ifdef ISO_TP_FRAME_PADDING
     (void) memset(message.as.single_frame.data + link->send_size, 0, sizeof(message.as.single_frame.data) - link->send_size);
-    ret = link->isotp_user_send_can(id, message.as.data_array.ptr, sizeof(message));
+    ret = link->isotp_user_send_can(id, message.as.data_array.ptr, sizeof(message), link->user_data);
 #else
     ret = link->isotp_user_send_can(id,
             message.as.data_array.ptr,
@@ -98,7 +98,7 @@ static int isotp_send_first_frame(IsoTpLink* link, uint32_t id) {
     (void) memcpy(message.as.first_frame.data, link->send_buffer, sizeof(message.as.first_frame.data));
 
     /* send message */
-    ret = link->isotp_user_send_can(id, message.as.data_array.ptr, sizeof(message));
+    ret = link->isotp_user_send_can(id, message.as.data_array.ptr, sizeof(message), link->user_data);
     if (ISOTP_RET_OK == ret) {
         link->send_offset += sizeof(message.as.first_frame.data);
         link->send_sn = 1;
@@ -128,7 +128,7 @@ static int isotp_send_consecutive_frame(IsoTpLink* link) {
     /* send message */
 #ifdef ISO_TP_FRAME_PADDING
     (void) memset(message.as.consecutive_frame.data + data_length, 0, sizeof(message.as.consecutive_frame.data) - data_length);
-    ret = link->isotp_user_send_can(link->send_arbitration_id, message.as.data_array.ptr, sizeof(message));
+    ret = link->isotp_user_send_can(link->send_arbitration_id, message.as.data_array.ptr, sizeof(message), link->user_data);
 #else
     ret = link->isotp_user_send_can(link->send_arbitration_id,
             message.as.data_array.ptr,
@@ -459,10 +459,10 @@ void isotp_init_link(
     uint16_t sendbufsize,
     uint8_t *recvbuf,
     uint16_t recvbufsize,
-    uint32_t                    (*isotp_user_get_ms)(void),
-    int                         (*isotp_user_send_can)(const uint32_t arbitration_id,
-                            const uint8_t* data, const uint8_t size),
-    void                        (*isotp_user_debug)(const char* message, ...)
+    uint32_t (*isotp_user_get_ms)(void),
+    int (*isotp_user_send_can)(const uint32_t arbitration_id, const uint8_t* data, const uint8_t size, void *user_data),
+    void (*isotp_user_debug)(const char* message, ...),
+    void *user_data
  ) {
     memset(link, 0, sizeof(*link));
     link->receive_status = ISOTP_RECEIVE_STATUS_IDLE;
@@ -475,7 +475,8 @@ void isotp_init_link(
     link->isotp_user_get_ms = isotp_user_get_ms;
     link->isotp_user_send_can = isotp_user_send_can;
     link->isotp_user_debug = isotp_user_debug;
-    
+    link->user_data = user_data;
+
     return;
 }
 
