@@ -19,6 +19,77 @@ This library doesn't assume anything about the source of the ISO-TP messages or 
 ### Master Build
 [![CMake](https://github.com/SimonCahill/isotp-c/actions/workflows/cmake.yml/badge.svg)](https://github.com/SimonCahill/isotp-c/actions/workflows/cmake.yml)
 
+## Building ISOTP-C
+
+This library may be built using either straight Makefiles, or using CMake.
+
+### make
+To build this library using Make, simply call:
+
+```bash
+$ make all
+```
+
+### CMake
+
+The CMake build system allows for more flexibility at generation and build time, so it is recommended you use this for building this library.  
+Of course, if your project does not use CMake, you don't *have* to use it.
+If your projects use a different build system, you are more than welcome to include it in this repository.
+
+The Makefile generator for isotpc will automatically detect whether or not your build system is using the `Debug` or `Release` build type and will adjust compiler parameters accordingly.
+
+> **NOTE**: Regardless of build type, the library will be compiled as position-independant code.
+
+#### Debug Build
+If your project is configured to build as `Debug`, then the library will be compiled with **no** optimisations and **with** debug symbols.  
+`-DCMAKE_BUILD_TYPE=Debug`
+
+#### Release Build
+If your project is configured to build as `Release`, then the library code will be **optimised** using `-O2` and will be **stripped**.  
+`-DCMAKE_BUILD_TYPE=Release`
+
+#### External Include Directories
+It is generally considered good practice to segregate header files from each other, depending on the project. For this reason, you may opt in to this behaviour for this library.  
+
+If you pass `-Disotpc_USE_INCLUDE_DIR=ON` on the command-line, or you set `set(isotpc_USE_INCLUDE_DIR ON CACHE BOOL "Use external include dir for isotp-c")` in your CMakeLists.txt, then a separate `include/` directory will
+be added to the project.  
+This happens at generation time, and the CMake project will automatically reference `${CMAKE_CURRENT_BINARY_DIR}/include` as the include directory for the project. This will be propagated to your projects, too.
+
+In your code:
+
+```c
+// if -Disotpc_USE_INCLUDE_DIR=ON
+#include <isotp/isotp.h>
+
+// else
+#include <isotp.h>
+```
+
+#### Static Library
+In some cases, it is required that a static library be used instead of a shared library.
+isotp-c supports this also, via options.
+
+Either pass `-Disotpc_STATIC_LIBRARY=ON` via command-line or `set(isotpc_STATIC_LIBRARY ON CACHE BOOL "Enable static library for isotp-c")` in your CMakeLists.txt and the library will be built as a static library (`*.a|*.lib`) for your project to include.
+
+#### Inclusion in your CMake project
+```cmake
+###
+# Set your desired options
+###
+set(isotpc_USE_INCLUDE_DIR ON CACHE BOOL "Use external include directory for isotp-c") # optional
+set(isotpc_STATIC_LIBRARY ON CACHE BOOL "Build isotp-c as a static library instead of shared") # optional
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/path/to/isotp-c) # add to current project
+
+target_link_libraries(
+    mytarget
+
+    # ... other libs
+    simon_cahill::isotp_c
+)
+```
+
+
 ## Usage
 
 First, create some [shim](https://en.wikipedia.org/wiki/Shim_(computing)) functions to let this library use your lower level system:
