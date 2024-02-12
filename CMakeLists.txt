@@ -31,7 +31,8 @@ target_compile_options(
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(isotp PUBLIC -O0 -g) # don't optimise and add debugging symbols
 else()
-    target_compile_options(isotp PUBLIC -O2 -s) # optimise code and strip the library
+    target_compile_options(isotp PUBLIC -O2) # optimise code
+    target_link_libraries(isotp PUBLIC -s) # strip the library
 endif()
 
 if (isotpc_USE_INCLUDE_DIR)
