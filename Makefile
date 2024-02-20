@@ -53,7 +53,7 @@ $(BIN)/$(LIB_NAME).$(MAJOR_VER).$(MINOR_VER).$(REVISION): libisotp.o
 # Compiles the isotp.c TU to an object file. 
 ###
 libisotp.o: isotp.c
-	${COMP} -c $^ -o $@ ${CFLAGS}
+	${COMP} -c $^ -o $@ ${CFLAGS} -DISO_TP_FRAME_PADDING
 	
 install: all
 	@printf "Installing $(LIB_NAME) to $(INSTALL_DIR)...\n"
