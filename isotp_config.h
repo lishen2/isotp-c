@@ -2,7 +2,7 @@
 #define __ISOTP_CONFIG__
 
 /* Max number of messages the receiver can receive at one time, this value 
- * is affectied by can driver queue length
+ * is affected by can driver queue length
  */
 #define ISO_TP_DEFAULT_BLOCK_SIZE   8
 
@@ -23,7 +23,13 @@
 
 /* Private: Determines if by default, padding is added to ISO-TP message frames.
  */
-#define ISO_TP_FRAME_PADDING
+//#define ISO_TP_FRAME_PADDING 0xAA
+
+/* Private: Value to use when padding frames if enabled by ISO_TP_FRAME_PADDING
+ */
+#ifndef ISO_TP_FRAME_PADDING_VALUE
+#define ISO_TP_FRAME_PADDING_VALUE 0xAA
+#endif
 
 #endif
 
