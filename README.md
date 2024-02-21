@@ -95,7 +95,10 @@ First, create some [shim](https://en.wikipedia.org/wiki/Shim_(computing)) functi
 ```C
     /* required, this must send a single CAN message with the given arbitration
      * ID (i.e. the CAN message ID) and data. The size will never be more than 8
-     * bytes. */
+     * bytes. Should return ISOTP_RET_OK if frame sent successfully.
+     * May return ISOTP_RET_NOSPACE if the frame could not be sent but may be
+     * retried later. Should return ISOTP_RET_ERROR in case frame could not be sent.
+     */
     int  isotp_user_send_can(const uint32_t arbitration_id,
                              const uint8_t* data, const uint8_t size) {
         // ...

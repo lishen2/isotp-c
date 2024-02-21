@@ -484,6 +484,8 @@ void isotp_poll(IsoTpLink *link) {
                 if (link->send_offset >= link->send_size) {
                     link->send_status = ISOTP_SEND_STATUS_IDLE;
                 }
+            } else if (ISOTP_RET_NOSPACE == ret) {
+                /* shim reported that it isn't able to send a frame at present, retry on next call */
             } else {
                 link->send_status = ISOTP_SEND_STATUS_ERROR;
             }
