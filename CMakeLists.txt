@@ -7,6 +7,7 @@ project(isotp LANGUAGES C VERSION 1.0.1 DESCRIPTION "A platform-agnostic ISOTP i
 
 option(isotpc_USE_INCLUDE_DIR "Copy header files to separate include directory in current binary dir for better separation of header files to combat potential naming conflicts." OFF)
 option(isotpc_STATIC_LIBRARY "Compile libisotpc as a static library, instead of a shared library." OFF)
+option(isotpc_STATIC_LIBRARY_PIC "Make use of position independent code (PIC), when compiling as a static library (enabled automatically when building shared libraries)." OFF)
 option(isotpc_PAD_CAN_FRAMES "Pad CAN frames to their full size." ON)
 set(isotpc_CAN_FRAME_PAD_VALUE "0xAA" CACHE STRING "Padding byte value to be used in CAN frames if enabled")
 
@@ -20,12 +21,19 @@ endif()
 # Strict building policies
 ###
 target_compile_options(
-    isotp PUBLIC
-    -fPIC
+    isotp PRIVATE
     -Werror
     -Wall
     -Wno-unknown-pragmas # ignore unknown pragmas, such as #pragma region
 )
+
+###
+# Enable position independent code (PIC) if required
+###
+if (NOT isotpc_STATIC_LIBRARY OR isotpc_STATIC_LIBRARY_PIC)
+    # Building a shared library or a static library with PIC enabled
+    target_compile_options(isotp PRIVATE -fPIC)
+endif()
 
 ###
 # Provide padding configuration
@@ -38,10 +46,10 @@ endif()
 # Check for debug builds
 ###
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(isotp PUBLIC -O0 -g) # don't optimise and add debugging symbols
+    target_compile_options(isotp PRIVATE -O0 -g) # don't optimise and add debugging symbols
 else()
-    target_compile_options(isotp PUBLIC -O2) # optimise code
-    target_link_libraries(isotp PUBLIC -s) # strip the library
+    target_compile_options(isotp PRIVATE -O2) # optimise code
+    target_link_libraries(isotp PRIVATE -s) # strip the library
 endif()
 
 if (isotpc_USE_INCLUDE_DIR)

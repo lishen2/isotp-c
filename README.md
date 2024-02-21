@@ -38,8 +38,6 @@ If your projects use a different build system, you are more than welcome to incl
 
 The Makefile generator for isotpc will automatically detect whether or not your build system is using the `Debug` or `Release` build type and will adjust compiler parameters accordingly.
 
-> **NOTE**: Regardless of build type, the library will be compiled as position-independant code.
-
 #### Debug Build
 If your project is configured to build as `Debug`, then the library will be compiled with **no** optimisations and **with** debug symbols.  
 `-DCMAKE_BUILD_TYPE=Debug`

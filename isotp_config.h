@@ -23,7 +23,7 @@
 
 /* Private: Determines if by default, padding is added to ISO-TP message frames.
  */
-//#define ISO_TP_FRAME_PADDING 0xAA
+//#define ISO_TP_FRAME_PADDING
 
 /* Private: Value to use when padding frames if enabled by ISO_TP_FRAME_PADDING
  */
