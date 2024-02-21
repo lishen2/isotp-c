@@ -19,6 +19,13 @@ This library doesn't assume anything about the source of the ISO-TP messages or 
 ### Master Build
 [![CMake](https://github.com/SimonCahill/isotp-c/actions/workflows/cmake.yml/badge.svg)](https://github.com/SimonCahill/isotp-c/actions/workflows/cmake.yml)
 
+## Contributors
+
+It's at this point where I'd like to point out all the fantastic contributions made to this fork by the amazing people using it!
+[List of contributors](https://raw.githubusercontent.com/SimonCahill/isotp-c/master/CONTRIBUTORS.md)
+
+Thank you all!
+
 ## Building ISOTP-C
 
 This library may be built using either straight Makefiles, or using CMake.
