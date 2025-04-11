@@ -485,9 +485,14 @@ void isotp_poll(IsoTpLink *link) {
                 link->send_timer_bs = isotp_user_get_ms() + ISO_TP_DEFAULT_RESPONSE_TIMEOUT;
                 link->send_timer_st = isotp_user_get_ms() + link->send_st_min;
 
+                /* Debug output */
+                printf("Sent CF frame, offset=%d, size=%d, bs_remain=%d\n",
+                       link->send_offset, link->send_size, link->send_bs_remain);
+
                 /* check if send finish */
                 if (link->send_offset >= link->send_size) {
                     link->send_status = ISOTP_SEND_STATUS_IDLE;
+                    printf("Multi-frame transmission completed\n");
                 }
             } else {
                 link->send_status = ISOTP_SEND_STATUS_ERROR;
@@ -513,4 +518,3 @@ void isotp_poll(IsoTpLink *link) {
 
     return;
 }
-
