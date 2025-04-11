@@ -35,13 +35,14 @@ IsoTpLink* g_sender_link = nullptr;
 // 模拟CAN发送函数
 int isotp_user_send_can(const uint32_t arbitration_id, 
                        const uint8_t* data, const uint8_t size) {
+    (void)arbitration_id; // 显式使用参数避免警告
    
 
     // 将消息转发到接收端
     if(g_receiver_link && arbitration_id == RECEIVER_CAN_ID) {
         printf("SendertoReceiver CAN ID: 0x%X, Data:", arbitration_id);
-        for(int i=0; i<size; i++) {
-            printf(" %02X", data[i]);
+        for(size_t i=0; i<size; i++) {
+            printf(" %02X", (unsigned)data[i]);
         }
         printf("\n");
         printf("Forwarding message to receiver link\n");
@@ -49,8 +50,8 @@ int isotp_user_send_can(const uint32_t arbitration_id,
         isotp_on_can_message(g_receiver_link, (uint8_t*)data, size);
     }else if(g_sender_link && arbitration_id == SENDER_CAN_ID) {
         printf("ReceiverToSender CAN ID: 0x%X, Data:", arbitration_id);
-        for(int i=0; i<size; i++) {
-            printf(" %02X", data[i]);
+            for(uint8_t i=0; i<size; i++) {
+                printf(" %02X", (unsigned)data[i]);
         }
         printf("\n");
         printf("Forwarding message to sender link\n");
@@ -72,10 +73,10 @@ uint32_t isotp_user_get_ms(void) {
 
 // 模拟流控帧发送
 void send_flow_control(IsoTpLink* link, uint8_t fs, uint8_t bs, uint8_t stmin) {
-    uint8_t fc_frame[3] = {0x30 | fs, bs, stmin};
+    uint8_t fc_frame[3] = {(uint8_t)(0x30 | fs), bs, stmin};
     printf("Sending Flow Control Frame to CAN ID 0x%X: ", link->send_arbitration_id);
-    for(int i=0; i<3; i++) {
-        printf("%02X ", fc_frame[i]);
+    for(uint8_t i=0; i<3; i++) {
+        printf("%02X ", (unsigned)fc_frame[i]);
     }
     printf("\n");
     isotp_on_can_message(link, fc_frame, sizeof(fc_frame));
@@ -103,7 +104,7 @@ void handle_uds_request(const uint8_t* data, uint16_t size, IsoTpLink* link) {
     }
     
     if(!response.empty()) {
-        isotp_send(link, response.data(), response.size());
+        isotp_send(link, response.data(), (uint16_t)response.size());
     }
 }
 
@@ -115,8 +116,8 @@ void handle_received_data(IsoTpLink* link) {
     switch(ret) {
         case ISOTP_RET_OK:
             printf("Received %d bytes: ", out_size);
-            for(int i=0; i<out_size; i++) {
-                printf("%02X ", payload[i]);
+            for(uint16_t i=0; i<out_size; i++) {
+                printf("%02X ", (unsigned)payload[i]);
             }
             printf("\n");           
             // 处理UDS请求
@@ -147,7 +148,7 @@ void sender_thread(IsoTpLink* link) {
             std::this_thread::sleep_for(std::chrono::milliseconds(50)); // 增加初始延迟
             
             int ret = ISOTP_RET_ERROR;
-            for(int attempt = 0; attempt < 3; ++attempt) { // 最多尝试3次
+            for(uint8_t attempt = 0; attempt < 3; ++attempt) { // 最多尝试3次
                 {
                     printf("Attempt%d: Acquired lock for sending\n",attempt);
                     ret = isotp_send(link, req.data, req.size);
@@ -164,11 +165,7 @@ void sender_thread(IsoTpLink* link) {
         printf("Exception in sender thread: %s\n", e.what());
     }
     printf("Sender thread finished\n");
-    while (1)
-    {
-        /* code */
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+    // 线程正常结束
     
 }
 

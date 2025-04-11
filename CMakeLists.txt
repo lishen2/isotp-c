@@ -7,7 +7,8 @@ project(isotp LANGUAGES C CXX)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 if(MSVC)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3 /utf-8 /D_CRT_SECURE_NO_WARNINGS")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /utf-8 /D_CRT_SECURE_NO_WARNINGS")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 endif()
@@ -27,14 +28,30 @@ install(TARGETS isotp
     PUBLIC_HEADER DESTINATION include
 )
 
-# 测试程序
+# 测试配置
 set(CMAKE_CXX_STANDARD 11)
 find_package(Threads REQUIRED)
-add_executable(isotp_test
-    isotp_test.cpp
-)
+
+# 功能测试程序(演示用)
+add_executable(isotp_test isotp_test.cpp)
 target_link_libraries(isotp_test isotp Threads::Threads)
 
-# 添加测试目标
+# 单元测试配置
+include(CTest)
 enable_testing()
-add_test(NAME isotp_test COMMAND isotp_test)
+
+# 单元测试可执行文件
+add_executable(test_isotp test_isotp.cpp isotp.c isotp_user_impl.c)
+target_link_libraries(test_isotp isotp Threads::Threads)
+
+# 添加单元测试
+add_test(NAME test_isotp 
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/test_isotp
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+# 设置测试属性
+set_tests_properties(test_isotp
+    PROPERTIES
+    TIMEOUT 30
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)

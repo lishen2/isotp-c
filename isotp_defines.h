@@ -18,7 +18,7 @@
 /**************************************************************
  * OS specific defines
  *************************************************************/
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(snprintf) && !defined(_UCRT)
 #define snprintf _snprintf
 #endif
 
