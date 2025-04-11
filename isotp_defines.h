@@ -1,6 +1,8 @@
 #ifndef __ISOTP_TYPES__
 #define __ISOTP_TYPES__
 
+#include <stdint.h>
+
 /**************************************************************
  * compiler specific defines
  *************************************************************/
@@ -16,7 +18,7 @@
 /**************************************************************
  * OS specific defines
  *************************************************************/
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(snprintf) && !defined(_UCRT)
 #define snprintf _snprintf
 #endif
 
@@ -222,4 +224,3 @@ typedef enum {
 #define ISOTP_PROTOCOL_RESULT_ERROR        -9
 
 #endif
-
