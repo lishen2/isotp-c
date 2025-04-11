@@ -4,7 +4,7 @@ CFLAGS := -Wall -g -ggdb $(STD)
 LDFLAGS := -shared
 BIN := ./bin
 
-.PHONY: all clean fPIC no_opt $(BIN)/$(LIB_NAME) $(BIN)/$(LIB_NAME).$(MAJOR_VER) $(BIN)/$(LIB_NAME).$(MAJOR_VER).$(MINOR_VER).$(REVISION) travis 
+.PHONY: all clean fPIC no_opt $(BIN)/$(LIB_NAME) $(BIN)/$(LIB_NAME).$(MAJOR_VER) $(BIN)/$(LIB_NAME).$(MAJOR_VER).$(MINOR_VER).$(REVISION) travis test
 
 ###
 # BEGIN TARGETS
@@ -61,6 +61,15 @@ install: all
 	@printf "Library was installed...\n"
 
 ###
+# Build and run test program
+###
+test: isotp_test
+	@printf "\nRunning test...\n"
+	./isotp_test
+
+isotp_test: isotp_test.c libisotp.o
+	${COMP} $^ -o $@ ${CFLAGS}
+
+###
 # END TARGETS
 ###
-

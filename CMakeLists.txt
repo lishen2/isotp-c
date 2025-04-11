@@ -1,19 +1,37 @@
 cmake_minimum_required(VERSION 3.10)
 
-###
-# Project definition
-###
+# 项目定义
 project(isotp LANGUAGES C)
 
-###
-# Get all include directories
-###
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/
+# 编译选项
+set(CMAKE_C_STANDARD 11)
+if(MSVC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3")
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+endif()
+
+# 构建isotp静态库
+add_library(isotp STATIC
+    isotp.c
+    isotp.h
+    isotp_defines.h
+    isotp_user.h
 )
 
-###
-# Compile isotp as Shared Lib
-###
-add_library(isotp SHARED
-            isotp.c)
+# 安装配置
+install(TARGETS isotp
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    PUBLIC_HEADER DESTINATION include
+)
+
+# 测试程序
+add_executable(isotp_test
+    isotp_test.c
+)
+target_link_libraries(isotp_test isotp)
+
+# 添加测试目标
+enable_testing()
+add_test(NAME isotp_test COMMAND isotp_test)
