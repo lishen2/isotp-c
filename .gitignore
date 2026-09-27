@@ -9,8 +9,14 @@
 ###
 *.o
 bin/
+build/
+build-*/
+coverage/
 
 ###
 # Ignore Backups
 ###
 *~
+
+html/
+/.vs
